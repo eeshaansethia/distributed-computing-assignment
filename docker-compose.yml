@@ -1,0 +1,46 @@
+version: "3"
+services:
+  database:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mern-app-network
+    container_name: database
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+    restart: always
+    networks:
+      - mern-app-network
+    container_name: backend
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: DockerFile
+    depends_on:
+      - backend
+    ports:
+      - 8080:8080
+    networks:
+      - mern-app-network
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+
+networks:
+  mern-app-network:
+
+volumes:
+  mongo-data:
